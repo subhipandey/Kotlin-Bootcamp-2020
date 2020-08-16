@@ -19,5 +19,18 @@ fun print(input: String) {
 }
 
 fun isPalindrome(input: String): Boolean {
-    return false
+    val regex = Regex("[^a-z]+")
+    val canonical = input.toLowerCase().replace(regex, "")
+
+    var forward = 0
+    var backward = canonical.length - 1
+
+    while (forward < backward) {
+        if (canonical[forward] != canonical[backward]) {
+            return false
+        }
+        forward++
+        backward--
+    }
+    return true
 }
