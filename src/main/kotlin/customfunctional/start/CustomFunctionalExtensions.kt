@@ -3,13 +3,13 @@ package customfunctional.start
 fun main() {
     val originalData = arrayListOf("12", "73", "52", "36", "87")
 
-    val mappedData = mymap(originalData, String::toInt)
-    val filteredData = myfilter(mappedData) { it > 50 }
-    val (even, odd) = mypartition(mappedData) { it % 2 == 0 }
-    val anyGreaterThan50 = myany(mappedData) { it > 50 }
-    val allGreaterThan50 = myall(mappedData) { it > 50 }
-    val sum = myreduce(mappedData) { previous, current -> previous + current }
-    val join = myreduce(mappedData, "Values: ") { previous, current -> previous + " " + current }
+    val mappedData = originalData.mymap(String::toInt)
+    val filteredData = mappedData.myfilter { it > 50 }
+    val (even, odd) = mappedData.mypartition { it % 2 == 0 }
+    val anyGreaterThan50 = mappedData.myany { it > 50 }
+    val allGreaterThan50 = mappedData.myall { it > 50 }
+    val sum = mappedData.myreduce { previous, current -> previous + current }
+    val join = mappedData.myreduce("Values: ") { previous, current -> previous + " " + current }
 
     printResults("Results of mapping to int", mappedData)
     printResults("Results of filtering > 50", filteredData)
@@ -20,17 +20,17 @@ fun main() {
     printResults("Results of reduce - join", join)
 }
 
-fun <T, U> mymap(input: Iterable<T>, transform: (T) -> U): List<U> {
+fun <T, U> Iterable<T>.mymap(transform: (T) -> U): List<U> {
     val results = ArrayList<U>()
-    for (item in input) {
+    for (item in this) {
         results.add(transform(item))
     }
     return results
 }
 
-fun <T> myfilter(input: Iterable<T>, predicate: (T) -> Boolean): List<T> {
+fun <T> Iterable<T>.myfilter(predicate: (T) -> Boolean): List<T> {
     val results = ArrayList<T>()
-    for (item in input) {
+    for (item in this) {
         if (predicate(item)) {
             results.add(item)
         }
@@ -38,9 +38,9 @@ fun <T> myfilter(input: Iterable<T>, predicate: (T) -> Boolean): List<T> {
     return results
 }
 
-fun <T> mypartition(input: Iterable<T>, predicate: (T) -> Boolean): Pair<List<T>, List<T>> {
+fun <T> Iterable<T>.mypartition(predicate: (T) -> Boolean): Pair<List<T>, List<T>> {
     val results = Pair(ArrayList<T>(), ArrayList<T>())
-    for (item in input) {
+    for (item in this) {
         if (predicate(item)) {
             results.first.add(item)
         } else {
@@ -50,31 +50,31 @@ fun <T> mypartition(input: Iterable<T>, predicate: (T) -> Boolean): Pair<List<T>
     return results
 }
 
-fun <T> myany(input: Iterable<T>, predicate: (T) -> Boolean): Boolean {
-    for (item in input) {
+fun <T> Iterable<T>.myany(predicate: (T) -> Boolean): Boolean {
+    for (item in this) {
         if (predicate(item)) return true
     }
     return false
 }
 
-fun <T> myall(input: Iterable<T>, predicate: (T) -> Boolean): Boolean {
-    for (item in input) {
+fun <T> Iterable<T>.myall(predicate: (T) -> Boolean): Boolean {
+    for (item in this) {
         if (!predicate(item)) return false
     }
     return true
 }
 
-fun <T> myreduce(input: Iterable<T>, reducer: (T, T) -> T): T {
-    var total = input.first()
-    for (item in input.drop(1)) {
+fun <T> Iterable<T>.myreduce(reducer: (T, T) -> T): T {
+    var total = this.first()
+    for (item in this.drop(1)) {
         total = reducer(total, item)
     }
     return total
 }
 
-fun <T, U> myreduce(input: Iterable<T>, initial: U,  reducer: (U, T) -> U): U {
+fun <T, U> Iterable<T>.myreduce(initial: U,  reducer: (U, T) -> U): U {
     var total = initial
-    for (item in input) {
+    for (item in this) {
         total = reducer(total, item)
     }
     return total
